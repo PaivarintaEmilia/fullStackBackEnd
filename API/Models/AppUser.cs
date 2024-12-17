@@ -4,16 +4,21 @@ namespace API.Models;
 
 public class AppUser
 {
-    // Muista, käyttää Id-propertysta juuri tällaista nimeä
-    // asennamme EntityFrameWorkCore-riippvuuden Nugetista
-    // EF Core tekee autom. Id-attribuutista tietokannan
-    // taulun perusavaimen
+
     public int Id { get; set; }
-    public required string UserName { get; set; }
+    public required string Email { get; set; }
     public required string Role { get; set; }
     public required byte[] PasswordSalt { get; set; }
     public required byte[] HashedPassword { get; set; }
 
-    public virtual ICollection<Order> OrdersOwned { get; set; } = [];
-    public virtual ICollection<Order> OrdersHandled { get; set; } = [];
+    // Connection to Income-table
+    // Yksi käyttäjä voi omistaa useita tuloja (Income)
+    public ICollection<Incomes>? Incomes { get; set; }
+
+    // User can have many expenses
+    public ICollection<Expenses>? Expenses { get; set; }
+
+    // User can have many categories
+    public ICollection<Categories>? Categories { get; set; }
+
 }

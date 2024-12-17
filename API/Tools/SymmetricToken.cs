@@ -36,7 +36,7 @@ public class SymmetricToken(IConfiguration config) : ITokenTool
         // Import on identityModel Token
         var claims = new List<Claim> {
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Name, user.UserName),
+            new Claim(JwtRegisteredClaimNames.Name, user.Email),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(ClaimTypes.Role, user.Role) // Tämäm ei ole jwt:n speksissä, ja meidän itse luoma vaatimus
 

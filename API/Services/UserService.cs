@@ -23,7 +23,7 @@ public class UserService(DataContext context, ITokenTool tokenCreator) : IUserSe
     public async Task<LoginResDto?> Login(LoginReqDto req)
     {
         // Haetaan user
-        var user = await context.Users.FirstOrDefaultAsync(u => u.UserName.ToLower() == req.UserName.ToLower());
+        var user = await context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == req.UserName.ToLower());
 
         // Varmistetaan ettei ole null
         if(user == null) {
@@ -66,7 +66,7 @@ public class UserService(DataContext context, ITokenTool tokenCreator) : IUserSe
         // Luodaan käyttäjä
         var user = new AppUser
         {
-            UserName = req.UserName,
+            Email = req.Email,
             Role = "admin",
             PasswordSalt = hmac.Key,
             HashedPassword = hmac.ComputeHash(Encoding.UTF8.GetBytes(req.Password))

@@ -11,15 +11,15 @@ namespace API.Controllers
     public class UsersController(IUserService service, IMapper mapper) : ControllerBase
     {
 
-        // Kaikkien käyttäjien hakuun
-        [HttpGet] // Kertoo, että kyseessä on route_handler
-        public async Task<ActionResult<List<UserResDto>>> GetAllUsers()
-        {
-            var users = await service.GetAll();
-            return Ok(
-                mapper.Map<List<UserResDto>>(users)
-            );
-        }
+        // // Kaikkien käyttäjien hakuun
+        // [HttpGet] // Kertoo, että kyseessä on route_handler
+        // public async Task<ActionResult<List<UserResDto>>> GetAllUsers()
+        // {
+        //     var users = await service.GetAll();
+        //     return Ok(
+        //         mapper.Map<List<UserResDto>>(users)
+        //     );
+        // }
 
         // Login
         [HttpPost("login")]

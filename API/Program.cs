@@ -21,13 +21,16 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 /* PRODUCT */
-builder.Services.AddScoped<IProductService, ProductService>();
+//builder.Services.AddScoped<IProductService, ProductService>();
 
 /* USER */
 builder.Services.AddScoped<IUserService, UserService>();
 
+/* INCOME */
+builder.Services.AddScoped<IIncomesService, IncomesService>();
+
 /* CATEGORY */
-builder.Services.AddScoped<ICategoryService, CategoryService>();
+//builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 /* DATACONTEXT */
 
@@ -49,8 +52,9 @@ var mapperConfig = new MapperConfiguration(mc =>
     // UserProfile
     mc.AddProfile(new UserProfile());
 
-    // ProductProfile
-    mc.AddProfile(new ProductProfile());
+    // Income Profile
+    mc.AddProfile(new IncomesProfile());
+    
 });
 
 // luodaan uusi mapper aiemmin tehdyllä konfiguraatiolla
@@ -111,10 +115,11 @@ builder.Services.AddSwaggerGen(c =>
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
