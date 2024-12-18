@@ -11,13 +11,16 @@ public interface IIncomesService
     Task<IncomeResTotalAmountDto> GetAmountSum(int userId);
 
     // Get all incomes from spesific times
-    Task<List<Incomes>> GetAllIncomes(DateTimeReqDto req);
+    Task<List<Incomes>> GetAllIncomes(DateTimeReqDto req, int userId);
+
+    // Create Income
+    Task<Incomes> CreateIncome(IncomeDto req, int userId);
 
     // Edit Income
-    Task<IncomeDto?> UpdateIncome(IncomeDto req);
+    Task<IncomeDto?> UpdateIncome(IncomeDto req, int id);
 
 
     // Delete income
-    Task<string?> DeleteIncomeById(int incomeId);
+    Task<string> DeleteIncomeById(int id);
 
 }

@@ -26,42 +26,43 @@ public class IncomesService(DataContext context) : IIncomesService
     }
 
     // Get incomes with spesific dates
-    public async Task<List<Incomes>> GetAllIncomes(DateTimeReqDto req)
+    public async Task<List<Incomes>> GetAllIncomes(DateTimeReqDto req, int userId)
     {
         // Haetaan data päivämäärien perusteella
         var incomes = await context.Incomes
-            .Where(i => i.CreatedAt >= req.StartingDate && i.CreatedAt <= req.EndingDate)
+            .Where(i => i.Id == userId && i.CreatedAt >= req.StartingDate && i.CreatedAt <= req.EndingDate)
             .ToListAsync(); // Incomes-mallit listana
 
         return incomes;
     }
 
-    // Delete Income by id
-    public async Task<string?> DeleteIncomeById(int incomeId)
+    // Create Income
+    public async Task<Incomes> CreateIncome(IncomeDto req, int userId)
     {
-        // Search the income by id
-        var income = await context.Incomes.FirstOrDefaultAsync(income => income.Id == incomeId);
-
-        // Return message if income wasn't found
-        if (income == null)
+        // Luodaan income
+        var newIncome = new Incomes
         {
-            return "No income found with this id. Deletion unsuccessfull.";
+            Description = req.Description,
+            Amount = req.Amount,
+            CreatedAt = DateTime.Now,
+            UserId = userId
         };
 
-        // Delete the income
-        context.Incomes.Remove(income);
-
-        // Save changes
+        // Tietokantaan lisäys
+        context.Incomes.Add(newIncome);
+        // Commit
         await context.SaveChangesAsync();
 
-        return "Income deleted.";
+
+        // return
+        return newIncome;
     }
 
     // Edit income 
-    public async Task<IncomeDto?> UpdateIncome(IncomeDto req)
+    public async Task<IncomeDto?> UpdateIncome(IncomeDto req, int id)
     {
 
-        var income = await context.Incomes.FirstOrDefaultAsync(income => income.Id == req.Id);
+        var income = await context.Incomes.FirstOrDefaultAsync(income => income.Id == id);
 
         if (income != null)
         {
@@ -79,4 +80,27 @@ public class IncomesService(DataContext context) : IIncomesService
 
         return null;
     }
+
+    // Delete Income by id
+    public async Task<string> DeleteIncomeById(int id)
+    {
+        // Search the income by id
+        var income = await context.Incomes.FirstOrDefaultAsync(income => income.Id == id);
+
+        // Return message if income wasn't found
+        if (income == null)
+        {
+            return "No income found with this id. Deletion unsuccessfull.";
+        };
+
+        // Delete the income
+        context.Incomes.Remove(income);
+
+        // Save changes
+        await context.SaveChangesAsync();
+
+        return "Income deleted.";
+    }
+
+
 }

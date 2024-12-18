@@ -37,7 +37,7 @@ namespace API.Controllers
         // Get Expenses ordered by Cateogries
         [Authorize(Roles = "user")]
         [HttpGet]
-        public async Task<ActionResult<Dictionary<string, List<ExpenseResDto>>>> GetExpensesByCategories()
+        public async Task<ActionResult<Dictionary<string, List<ExpenseResDto>>>> GetExpensesByCategories(DateTimeReqDto req)
         {
             var userId = await getIdTool.GetIdFromToken(HttpContext);
 
@@ -46,7 +46,7 @@ namespace API.Controllers
                 return Unauthorized("No ID found from token.");
             }
 
-            var listOfExpenses = await service.GetExpensesByCategories(userId.Value);
+            var listOfExpenses = await service.GetExpensesByCategories(req, userId.Value);
 
             return Ok(listOfExpenses);
 

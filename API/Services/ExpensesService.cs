@@ -1,5 +1,6 @@
 using System;
 using API.Data;
+using API.Data.Dtos;
 using API.Data.Dtos.Expenses;
 using API.Models;
 using API.Services.Interfaces;
@@ -27,21 +28,23 @@ public class ExpensesService(DataContext context) : IExpensesService
 
     // Get Expenses with spesific dates
     // Order by categories
-    public async Task<Dictionary<string, List<ExpenseResDto>>> GetExpensesByCategories(int userId)
+    public async Task<Dictionary<string, List<ExpenseResDto>>> GetExpensesByCategories(DateTimeReqDto req, int userId)
     {
         // Haetaan käyttäjän expenset lajiteltuna cateogrioiden mukaan
 
-        // 1. Taulujen yhdistäminen
-        var listOfExpenses = await context.Expenses
-            .Where(e => e.UserId == userId)
-            .Include(e => e.Category)
-            .ToListAsync();
+        // 1. Suodatetaan päivämäärien mukaan
+        var query = context.Expenses
+            .Where(e => e.UserId == userId && e.CreatedAt >= req.StartingDate && e.CreatedAt <= req.EndingDate)
+            .Include(e => e.Category);
 
-        // 2. Expense hakeminen categorioihin lajiteltuna
+        // 2. Haetaan tietokannan tiedot
+        var listOfExpenses = await query.ToListAsync();
+
+        // 3. Lajitellaan kategorioittain
         var groupedExpenses = listOfExpenses
             .GroupBy(e => e.Category.Name)
             .ToDictionary(
-                group => group.Key,
+                group => group.Key, // Kategorian nimi
                 group => group.Select(e => new ExpenseResDto
                 {
                     Id = e.Id,
@@ -87,7 +90,7 @@ public class ExpensesService(DataContext context) : IExpensesService
         var expense = await context.Expenses.FirstOrDefaultAsync(expense => expense.Id == id);
 
         // Päivitetään expense tietyllä id:llä
-        if (expense != null) 
+        if (expense != null)
         {
             expense.Description = req.Description;
             expense.Amount = req.Amount;
