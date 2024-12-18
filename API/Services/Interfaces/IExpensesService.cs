@@ -18,6 +18,9 @@ public interface IExpensesService
     // Update an expense
     Task<ExpenseResDto?> UpdateExpense(ExpenseReqDto req, int id);
 
+    // Delete an expense
+    Task<string?> DeleteExpenseById(int id);
+
 
 
 }

@@ -108,12 +108,29 @@ public class ExpensesService(DataContext context) : IExpensesService
         return null;
     }
 
-
-
-
-
-
     // Delete expense by id
+    public async Task<string?> DeleteExpenseById(int id)
+    {
+        var expense = await context.Expenses.FirstOrDefaultAsync(expense => expense.Id == id);
+
+        if (expense == null)
+        {
+            return "No expense found with the specific id. Deletion unsuccessfull.";
+        }
+
+        context.Expenses.Remove(expense);
+
+        await context.SaveChangesAsync();
+
+        return "Expense deleted.";
+    }
+
+
+
+
+
+
+
 
 
 

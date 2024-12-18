@@ -82,8 +82,7 @@ namespace API.Controllers
         // Update an expense
         [HttpPatch("{id}")]
         public async Task<ExpenseResDto?> UpdateExpense(ExpenseReqDto req, int id)
-        {
-            
+        {   
             var updatedExpense = await service.UpdateExpense(req, id);
 
             return updatedExpense;
@@ -91,6 +90,13 @@ namespace API.Controllers
 
 
         // Delete Expense
+        [HttpDelete("{id}")]
+        public async Task<string?> DeleteExpenseById(int id)
+        {
+            var deleteResponse = await service.DeleteExpenseById(id);
+
+            return deleteResponse;
+        }
 
 
 
