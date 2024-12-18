@@ -19,7 +19,7 @@ public interface IExpensesService
     Task<ExpenseResDto?> UpdateExpense(ExpenseReqDto req, int id);
 
     // Delete an expense
-    Task<string?> DeleteExpenseById(int id);
+    Task<string> DeleteExpenseById(int id);
 
 
 

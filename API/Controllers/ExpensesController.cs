@@ -1,3 +1,4 @@
+using API.Data.Dtos;
 using API.Data.Dtos.Expenses;
 using API.Models;
 using API.Services.Interfaces;
@@ -56,7 +57,7 @@ namespace API.Controllers
         // Create an expense
         [Authorize(Roles = "user")]
         [HttpPost]
-        public async Task<ActionResult<Expenses>> CreateExpense(ExpenseReqDto req)
+        public async Task<ActionResult<ExpenseResDto>> CreateExpense(ExpenseReqDto req)
         {
 
             var userId = await getIdTool.GetIdFromToken(HttpContext);
@@ -86,11 +87,11 @@ namespace API.Controllers
 
         // Delete Expense
         [HttpDelete("{id}")]
-        public async Task<string?> DeleteExpenseById(int id)
+        public async Task<DeleteResDto> DeleteExpenseById(int id)
         {
             var deleteResponse = await service.DeleteExpenseById(id);
 
-            return deleteResponse;
+            return new DeleteResDto { Message = deleteResponse };
         }
 
 

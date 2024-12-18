@@ -35,50 +35,43 @@ namespace API.Controllers
 
             //return null;
             return mapper.Map<List<CategoriesResDto>>(categories);
-
         }
 
-        // // Categorian lisäys | vain adminit 
-        // [Authorize(Roles = "admin")]
-        // [HttpPost("addCategory")]
-        // public async Task<ActionResult<CategoryResDto>> CreateCategory(CategoryReqDto req)
-        // {
+        // Create a new cateogry
+        [Authorize(Roles = "user")]
+        [HttpPost]
+        public async Task<ActionResult<CategoriesResDto>> CreateCategory(CategoriesResDto req)
+        {
+            var userId = await getIdTool.GetIdFromToken(HttpContext);
 
-        //     // Hae käyttäjän ID tokenista
-        //     var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier) ?? User.FindFirst("sub");
+            if (userId == null)
+            {
+                return Unauthorized("No ID found from token.");
+            }
 
-        //     if (userIdClaim == null)
-        //     {
-        //         return Unauthorized("User ID ei löytynyt tokenista.");
-        //     }
+            var newCategory = await service.CreateCategory(req, userId.Value);
 
-        //     // Muutetaan id kokonaisluvuksi
-        //     var userId = int.Parse(userIdClaim.Value);
+            return new CategoriesResDto { Id = newCategory.Id, Name = newCategory.Name };
+        }
 
-        //     var newCategory = await service.Create(req, userId);
+        // Update category
+        [Authorize(Roles = "admin")]
+        [HttpPut("{id}")]
+        public async Task<CategoriesResDto?> UpdateCategory(CategoriesResDto req, int id)
+        {
+            var updatedCategory = await service.UpdateCategory(req, id);
 
-        //     return Ok(newCategory);
-        // }
+            return updatedCategory;
+        }
 
-        // // Kategorian muokkaaminen | vain adminit 
-        // [Authorize(Roles = "admin")]
-        // [HttpPatch("{id}")] // Vain osittaiseen muokkaukseen
-        // public async Task<ActionResult<CategoryResDto?>> UpdateCategory(CategoryReqDto req, int id)
-        // {
-        //     // En ottanut id:tä mukaan, koska en tiedä onko sillä väliä. Riippuu siitä halutaanko pitää tieto categorian luojasta tietokannasta vai 
-        //     // viimeisimmästä muokkaajasta. Tästä löytyy lisätietoa ReadMe-filusta. 
-        //     var updatedCategory = await service.Update(req, id);
-        //     return Ok(updatedCategory);
-        // }
+        // Update category
+        [Authorize(Roles = "admin")]
+        [HttpDelete("{id}")]
+        public async Task<DeleteResDto> DeleteCategory(int id)
+        {
+            var deleteResponse = await service.DeleteCategory(id);
 
-        // // Kategorian poisto | vain adminit 
-        // [Authorize("admin")]
-        // [HttpDelete("{id}")]
-        // public async Task<ActionResult<string?>> DeleteCategory(int id)
-        // {
-        //     var deletetion = await service.Delete(id);
-        //     return Ok(deletetion);
-        // }
-
+            return new DeleteResDto { Message = deleteResponse };
+        }
     }
 }

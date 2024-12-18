@@ -109,7 +109,7 @@ public class ExpensesService(DataContext context) : IExpensesService
     }
 
     // Delete expense by id
-    public async Task<string?> DeleteExpenseById(int id)
+    public async Task<string> DeleteExpenseById(int id)
     {
         var expense = await context.Expenses.FirstOrDefaultAsync(expense => expense.Id == id);
 
