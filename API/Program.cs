@@ -5,6 +5,7 @@ using API.Data;
 using API.Profiles;
 using API.Services;
 using API.Services.Interfaces;
+using API.Tools;
 using API.Tools.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -20,17 +21,26 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 
-/* PRODUCT */
-//builder.Services.AddScoped<IProductService, ProductService>();
+/* --SERVICES-- */
 
-/* USER */
+/* Users */
 builder.Services.AddScoped<IUserService, UserService>();
 
-/* INCOME */
+/* Incomes */
 builder.Services.AddScoped<IIncomesService, IncomesService>();
 
-/* CATEGORY */
+/* Expenses */
+builder.Services.AddScoped<IExpensesService, ExpensesService>();
+
+/* Category */
 //builder.Services.AddScoped<ICategoryService, CategoryService>();
+
+
+
+/* --TOOLS-- */
+
+/* Get Id from token */
+builder.Services.AddScoped<IGetIdTool, GetIdTool>();
 
 /* DATACONTEXT */
 

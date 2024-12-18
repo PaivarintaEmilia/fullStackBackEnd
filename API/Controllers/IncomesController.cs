@@ -33,7 +33,7 @@ namespace API.Controllers
         }
 
 
-        // Modificate Income
+        // Update Income
         [HttpPatch]
         public async Task<IncomeDto> UpdateIncome(IncomeDto req)
         {

@@ -9,7 +9,15 @@ public interface IExpensesService
     // Amount-column sum from this month
     Task<ExpenseResTotalAmountDto> GetAmountSum(int userId);
 
+    // Get expenses ordered by categoriers
+    Task<Dictionary<string, List<ExpenseResDto>>> GetExpensesByCategories(int userId);
+
     // Create a new expense
     Task<Expenses> CreateExpense(ExpenseReqDto req, int userId);
+
+    // Update an expense
+    Task<ExpenseResDto?> UpdateExpense(ExpenseReqDto req, int id);
+
+
 
 }

@@ -27,6 +27,33 @@ public class ExpensesService(DataContext context) : IExpensesService
 
     // Get Expenses with spesific dates
     // Order by categories
+    public async Task<Dictionary<string, List<ExpenseResDto>>> GetExpensesByCategories(int userId)
+    {
+        // Haetaan käyttäjän expenset lajiteltuna cateogrioiden mukaan
+
+        // 1. Taulujen yhdistäminen
+        var listOfExpenses = await context.Expenses
+            .Where(e => e.UserId == userId)
+            .Include(e => e.Category)
+            .ToListAsync();
+
+        // 2. Expense hakeminen categorioihin lajiteltuna
+        var groupedExpenses = listOfExpenses
+            .GroupBy(e => e.Category.Name)
+            .ToDictionary(
+                group => group.Key,
+                group => group.Select(e => new ExpenseResDto
+                {
+                    Id = e.Id,
+                    Description = e.Description,
+                    Amount = e.Amount,
+                    CategoryId = e.CategoryId
+                }).ToList()
+            );
+
+        return groupedExpenses;
+    }
+
 
 
 
@@ -53,8 +80,37 @@ public class ExpensesService(DataContext context) : IExpensesService
         return newExpense;
     }
 
-
     // Update expense by id
+    public async Task<ExpenseResDto?> UpdateExpense(ExpenseReqDto req, int id)
+    {
+        // Haetaan Expense
+        var expense = await context.Expenses.FirstOrDefaultAsync(expense => expense.Id == id);
+
+        // Päivitetään expense tietyllä id:llä
+        if (expense != null) 
+        {
+            expense.Description = req.Description;
+            expense.Amount = req.Amount;
+            expense.CategoryId = req.CategoryId;
+            // Tallennetaan muutetut tiedot
+            await context.SaveChangesAsync();
+
+            // Muutetaan Expense -> ExpenseResDto
+            return new ExpenseResDto
+            {
+                Id = expense.Id,
+                Description = expense.Description,
+                Amount = expense.Amount,
+                CategoryId = expense.CategoryId
+            };
+        }
+
+        return null;
+    }
+
+
+
+
 
 
     // Delete expense by id
