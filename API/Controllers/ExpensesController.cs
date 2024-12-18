@@ -21,36 +21,31 @@ namespace API.Controllers
         {
             // Tarvitaan kirjautuneen käyttäjän id tokenista, jotta voidaan hakea sen pohjalta oikea data
 
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier) ?? User.FindFirst("sub");
+            var userId = await getIdTool.GetIdFromToken(HttpContext);
 
-            if (userIdClaim == null)
+            if (userId == null)
             {
-                return Unauthorized("No ID found from token. Sign in.");
+                return Unauthorized("No ID found from token.");
             }
 
-            // Muutetaan id kokonaisluvuksi
-            var userId = int.Parse(userIdClaim.Value);
-
             // Tehdään kutsu
-            var amountSum = await service.GetAmountSum(userId);
+            var amountSum = await service.GetAmountSum(userId.Value);
             return Ok(amountSum);
         }
 
         // Get Expenses ordered by Cateogries
+        [Authorize(Roles = "user")]
         [HttpGet]
         public async Task<ActionResult<Dictionary<string, List<ExpenseResDto>>>> GetExpensesByCategories()
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier) ?? User.FindFirst("sub");
+            var userId = await getIdTool.GetIdFromToken(HttpContext);
 
-            if (userIdClaim == null)
+            if (userId == null)
             {
-                return Unauthorized("No ID found from token. Sign in.");
+                return Unauthorized("No ID found from token.");
             }
 
-            // Muutetaan id kokonaisluvuksi
-            var userId = int.Parse(userIdClaim.Value);
-
-            var listOfExpenses = await service.GetExpensesByCategories(userId);
+            var listOfExpenses = await service.GetExpensesByCategories(userId.Value);
 
             return Ok(listOfExpenses);
 
@@ -82,7 +77,7 @@ namespace API.Controllers
         // Update an expense
         [HttpPatch("{id}")]
         public async Task<ExpenseResDto?> UpdateExpense(ExpenseReqDto req, int id)
-        {   
+        {
             var updatedExpense = await service.UpdateExpense(req, id);
 
             return updatedExpense;

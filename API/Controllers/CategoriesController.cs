@@ -1,7 +1,10 @@
 using System.Security.Claims;
 using API.Data.Dtos;
+using API.Data.Dtos.Categories;
 using API.Models;
 using API.Services.Interfaces;
+using API.Tools.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,8 +13,30 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoriesController() : ControllerBase
+    public class CategoriesController(ICategoriesService service, IGetIdTool getIdTool, IMapper mapper) : ControllerBase
     {
+
+        // Get categories
+        [Authorize(Roles = "user")]
+        [HttpGet]
+        public async Task<ActionResult<List<CategoriesResDto>>> GetCategories()
+        {
+
+            // Tarvitaan id, jotta voidaan hakea käyttäjän luomat categoriat
+            var userId = await getIdTool.GetIdFromToken(HttpContext);
+
+            if (userId == null)
+            {
+                return Unauthorized("No ID found from token.");
+            }
+
+            // Palauttaa modelit
+            var categories = await service.GetCategories(userId.Value);
+
+            //return null;
+            return mapper.Map<List<CategoriesResDto>>(categories);
+
+        }
 
         // // Categorian lisäys | vain adminit 
         // [Authorize(Roles = "admin")]
@@ -29,7 +54,7 @@ namespace API.Controllers
 
         //     // Muutetaan id kokonaisluvuksi
         //     var userId = int.Parse(userIdClaim.Value);
-            
+
         //     var newCategory = await service.Create(req, userId);
 
         //     return Ok(newCategory);

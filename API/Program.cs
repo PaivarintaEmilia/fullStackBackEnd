@@ -16,11 +16,6 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 
-
-
-
-
-
 /* --SERVICES-- */
 
 /* Users */
@@ -64,6 +59,9 @@ var mapperConfig = new MapperConfiguration(mc =>
 
     // Income Profile
     mc.AddProfile(new IncomesProfile());
+
+    // Category Profile
+    mc.AddProfile(new CategoriesProfile());
     
 });
 
