@@ -28,7 +28,7 @@ builder.Services.AddScoped<IIncomesService, IncomesService>();
 builder.Services.AddScoped<IExpensesService, ExpensesService>();
 
 /* Category */
-//builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ICategoriesService, CategoriesService>();
 
 
 

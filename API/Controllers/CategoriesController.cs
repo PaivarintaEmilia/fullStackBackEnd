@@ -17,7 +17,7 @@ namespace API.Controllers
     {
 
         // Get categories
-        [Authorize(Roles = "user")]
+        [Authorize(Roles = "admin,user")] 
         [HttpGet]
         public async Task<ActionResult<List<CategoriesResDto>>> GetCategories()
         {
@@ -38,9 +38,9 @@ namespace API.Controllers
         }
 
         // Create a new cateogry
-        [Authorize(Roles = "user")]
+        [Authorize(Roles = "admin,user")] 
         [HttpPost]
-        public async Task<ActionResult<CategoriesResDto>> CreateCategory(CategoriesResDto req)
+        public async Task<ActionResult<CategoriesResDto>> CreateCategory(CategoriesReqDto req)
         {
             var userId = await getIdTool.GetIdFromToken(HttpContext);
 
@@ -57,14 +57,14 @@ namespace API.Controllers
         // Update category
         [Authorize(Roles = "admin")]
         [HttpPut("{id}")]
-        public async Task<CategoriesResDto?> UpdateCategory(CategoriesResDto req, int id)
+        public async Task<CategoriesResDto?> UpdateCategory(CategoriesReqDto req, int id)
         {
             var updatedCategory = await service.UpdateCategory(req, id);
 
             return updatedCategory;
         }
 
-        // Update category
+        // Delete category
         [Authorize(Roles = "admin")]
         [HttpDelete("{id}")]
         public async Task<DeleteResDto> DeleteCategory(int id)

@@ -15,14 +15,14 @@ public class CategoriesService(DataContext context) : ICategoriesService
     public async Task<List<Categories>> GetCategories(int userId)
     {
         var categories = await context.Categories
-            .Where(i => i.UserId == userId && i.UserDefined == false)
+            .Where(i => i.UserId == userId || (i.UserDefined == false && i.UserId != userId))
             .ToListAsync();
 
         return categories; // Palautetaan modelit, koska controllerissa tapahtuu mappaus
     }
 
     // Create category
-    public async Task<Categories> CreateCategory(CategoriesResDto req, int userId)
+    public async Task<Categories> CreateCategory(CategoriesReqDto req, int userId)
     {
         var newCategory = new Categories
         {
@@ -41,7 +41,7 @@ public class CategoriesService(DataContext context) : ICategoriesService
     }
 
     // Update category
-    public async Task<CategoriesResDto?> UpdateCategory(CategoriesResDto req, int id)
+    public async Task<CategoriesResDto?> UpdateCategory(CategoriesReqDto req, int id)
     {
         var category = await context.Categories.FirstOrDefaultAsync(category => category.Id == id);
 
