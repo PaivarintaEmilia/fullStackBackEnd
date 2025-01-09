@@ -16,11 +16,10 @@ namespace API.Controllers
     {
 
         // Get Amount-columns sum from this month
-        [Authorize(Roles = "user")] // Sisäänkirjautuneelle käyttäjälle näytetään data ja haetaan id tokenista
+        [Authorize(Roles = "user,admin")]
         [HttpGet("total-amount")]
         public async Task<ActionResult<ExpenseResTotalAmountDto>> GetAmountsSum()
         {
-            // Tarvitaan kirjautuneen käyttäjän id tokenista, jotta voidaan hakea sen pohjalta oikea data
 
             var userId = await getIdTool.GetIdFromToken(HttpContext);
 
@@ -32,12 +31,14 @@ namespace API.Controllers
             // Tehdään kutsu
             var amountSum = await service.GetAmountSum(userId.Value);
             return Ok(amountSum);
+            // return DTO return new ExpenseResTotalAmountDto { TotalAmount = amountSum };
         }
 
+
         // Get Expenses ordered by Cateogries
-        [Authorize(Roles = "user")]
+        [Authorize(Roles = "user,admin")]
         [HttpGet]
-        public async Task<ActionResult<Dictionary<string, List<ExpenseResDto>>>> GetExpensesByCategories(DateTimeReqDto req)
+        public async Task<ActionResult<Dictionary<string, List<ExpenseResDto>>>> GetExpensesByCategories([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
         {
             var userId = await getIdTool.GetIdFromToken(HttpContext);
 
@@ -46,6 +47,14 @@ namespace API.Controllers
                 return Unauthorized("No ID found from token.");
             }
 
+            Console.WriteLine($"Received startDate: {startDate}, endDate: {endDate}");
+
+            var req = new DateTimeReqDto
+            {
+                StartingDate = startDate,
+                EndingDate = endDate
+            };
+
             var listOfExpenses = await service.GetExpensesByCategories(req, userId.Value);
 
             return Ok(listOfExpenses);
@@ -53,9 +62,8 @@ namespace API.Controllers
         }
 
 
-
         // Create an expense
-        [Authorize(Roles = "user")]
+        [Authorize(Roles = "user,admin")]
         [HttpPost]
         public async Task<ActionResult<ExpenseResDto>> CreateExpense(ExpenseReqDto req)
         {
@@ -70,12 +78,13 @@ namespace API.Controllers
             // Tarvittiin userId.Value, koska toolista tuleva id voi olla null jos sitä ei löydy
             var newExpense = await service.CreateExpense(req, userId.Value);
 
-            return Ok(newExpense);
+            return Ok(new ExpenseResDto { Id = newExpense.Id, Description = newExpense.Description, Amount = newExpense.Amount, CategoryId = newExpense.CategoryId });
 
         }
 
 
         // Update an expense
+        [Authorize(Roles = "user,admin")]
         [HttpPatch("{id}")]
         public async Task<ExpenseResDto?> UpdateExpense(ExpenseReqDto req, int id)
         {
@@ -86,6 +95,7 @@ namespace API.Controllers
 
 
         // Delete Expense
+        [Authorize(Roles = "user,admin")]
         [HttpDelete("{id}")]
         public async Task<DeleteResDto> DeleteExpenseById(int id)
         {

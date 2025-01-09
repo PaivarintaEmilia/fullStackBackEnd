@@ -15,12 +15,15 @@ public class ExpensesService(DataContext context) : IExpensesService
     // Get Amount-column sum from this month
     public async Task<ExpenseResTotalAmountDto> GetAmountSum(int userId)
     {
-        // Haetaan kaikki amountit tältä kuulta ja id:n perusteella
-        var amountSum = await context.Expenses
+        // Get all amounts with the correct userId and the current month and year
+        var amounts = await context.Expenses
             .Where(i => i.UserId == userId && i.CreatedAt.Month == DateTime.Now.Month && i.CreatedAt.Year == DateTime.Now.Year)
-            .SumAsync(i => i.Amount);
+            .ToListAsync();
 
-        // Palautetaan DTO 
+        // Sum the specific data from db
+        var amountSum = amounts.Sum(i => i.Amount);
+
+        // Return data DTO 
         return new ExpenseResTotalAmountDto { TotalAmount = amountSum };
     }
 
@@ -34,7 +37,7 @@ public class ExpensesService(DataContext context) : IExpensesService
 
         // 1. Suodatetaan päivämäärien mukaan
         var query = context.Expenses
-            .Where(e => e.UserId == userId && e.CreatedAt >= req.StartingDate && e.CreatedAt <= req.EndingDate)
+            .Where(e => e.UserId == userId && e.CreatedAt.Date >= req.StartingDate.Date && e.CreatedAt.Date <= req.EndingDate.Date)
             .Include(e => e.Category);
 
         // 2. Haetaan tietokannan tiedot
@@ -42,6 +45,7 @@ public class ExpensesService(DataContext context) : IExpensesService
 
         // 3. Lajitellaan kategorioittain
         var groupedExpenses = listOfExpenses
+            .Where(e => !string.IsNullOrEmpty(e.Category?.Name)) // Varmista, että kategoriassa on nimi
             .GroupBy(e => e.Category.Name)
             .ToDictionary(
                 group => group.Key, // Kategorian nimi
