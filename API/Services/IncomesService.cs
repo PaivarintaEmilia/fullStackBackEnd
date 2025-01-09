@@ -16,9 +16,12 @@ public class IncomesService(DataContext context) : IIncomesService
     public async Task<IncomeResTotalAmountDto> GetAmountSum(int userId)
     {
         // Haetaan kaikki amountit ja lisätään ne yhteen
-        var amountSum = await context.Incomes
+        var amounts = await context.Incomes
             .Where(i => i.UserId == userId && i.CreatedAt.Month == DateTime.Now.Month && i.CreatedAt.Year == DateTime.Now.Year)
-            .SumAsync(i => i.Amount);
+            .ToListAsync();
+
+                // Sum the specific data from db
+        var amountSum = amounts.Sum(i => i.Amount);
 
         // Palautetaan DTO
         return new IncomeResTotalAmountDto { TotalAmount = amountSum };
@@ -30,14 +33,16 @@ public class IncomesService(DataContext context) : IIncomesService
     {
         // Haetaan data päivämäärien perusteella
         var incomes = await context.Incomes
-            .Where(i => i.Id == userId && i.CreatedAt >= req.StartingDate && i.CreatedAt <= req.EndingDate)
+            .Where(i => i.UserId == userId && i.CreatedAt.Date >= req.StartingDate.Date && i.CreatedAt.Date <= req.EndingDate.Date)
             .ToListAsync(); // Incomes-mallit listana
+
+        Console.WriteLine(incomes);
 
         return incomes;
     }
 
     // Create Income
-    public async Task<Incomes> CreateIncome(IncomeDto req, int userId)
+    public async Task<Incomes> CreateIncome(IncomeReqDto req, int userId)
     {
         // Luodaan income
         var newIncome = new Incomes
@@ -58,8 +63,8 @@ public class IncomesService(DataContext context) : IIncomesService
         return newIncome;
     }
 
-    // Edit income 
-    public async Task<IncomeDto?> UpdateIncome(IncomeDto req, int id)
+    // Update income 
+    public async Task<IncomeDto?> UpdateIncome(IncomeReqDto req, int id)
     {
 
         var income = await context.Incomes.FirstOrDefaultAsync(income => income.Id == id);

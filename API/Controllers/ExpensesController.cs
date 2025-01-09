@@ -35,7 +35,7 @@ namespace API.Controllers
         }
 
 
-        // Get Expenses ordered by Cateogries
+        // Get Expenses ordered by Cateogries with specific dates
         [Authorize(Roles = "user,admin")]
         [HttpGet]
         public async Task<ActionResult<Dictionary<string, List<ExpenseResDto>>>> GetExpensesByCategories([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
@@ -62,7 +62,7 @@ namespace API.Controllers
         }
 
 
-        // Create an expense
+        // Create expense
         [Authorize(Roles = "user,admin")]
         [HttpPost]
         public async Task<ActionResult<ExpenseResDto>> CreateExpense(ExpenseReqDto req)
@@ -83,7 +83,7 @@ namespace API.Controllers
         }
 
 
-        // Update an expense
+        // Update expense
         [Authorize(Roles = "user,admin")]
         [HttpPatch("{id}")]
         public async Task<ExpenseResDto?> UpdateExpense(ExpenseReqDto req, int id)

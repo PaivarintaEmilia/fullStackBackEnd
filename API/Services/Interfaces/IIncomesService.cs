@@ -14,10 +14,10 @@ public interface IIncomesService
     Task<List<Incomes>> GetAllIncomes(DateTimeReqDto req, int userId);
 
     // Create Income
-    Task<Incomes> CreateIncome(IncomeDto req, int userId);
+    Task<Incomes> CreateIncome(IncomeReqDto req, int userId);
 
-    // Edit Income
-    Task<IncomeDto?> UpdateIncome(IncomeDto req, int id);
+    // Update Income
+    Task<IncomeDto?> UpdateIncome(IncomeReqDto req, int id);
 
 
     // Delete income
